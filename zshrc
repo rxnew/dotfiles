@@ -1,9 +1,3 @@
-# Set up the prompt
-
-#autoload -Uz promptinit
-#promptinit
-#prompt walters
-
 # ${fg[...]} や $reset_color をロード
 autoload -U colors
 colors
@@ -116,3 +110,12 @@ source $HOME/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 alias ls="ls -FG"
 alias ll="ls -lFG"
 alias la="ls -alFG"
+
+
+#===================================
+# Environment Variables
+#===================================
+if [[ -e $HOME/.zsh/.env ]]
+then
+    source $HOME/.zsh/.env
+fi
