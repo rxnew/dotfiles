@@ -5,11 +5,14 @@
 #prompt walters
 
 # ${fg[...]} や $reset_color をロード
-autoload -U colors; colors
+autoload -U colors
+colors
 
-#PROMPT='[%{${fg[white]}%}%n@%m%{${reset_color}%}]$ '
-#PROMPT='[%n%{[38;5;179m%}@%m%{[m%}]$ '
-PROMPT='[%n%{[38;5;217m%}@%m%{[m%}]$ '
+
+#===================================
+# Prompt
+#===================================
+PROMPT=$'%{[38;5;103m%}>%{[m%} '
 
 function rprompt-git-current-branch {
     local name st color mark
@@ -23,10 +26,10 @@ function rprompt-git-current-branch {
     fi
     st=`git status 2> /dev/null`
     if [[ -n `echo "$st" | grep "^nothing to"` ]]; then
-        color='%{[38;5;2m%}'
+        color='%{[38;5;250m%}'
         mark=''
     elif [[ -n `echo "$st" | grep "^nothing added"` ]]; then
-        color='%{[38;5;179m%}'
+        color='%{[38;5;9m%}'
         mark=''
         #elif [[ -n `echo "$st" | grep "^# Untracked"` ]]; then
         #        color=${fg_bold[red]}
@@ -37,58 +40,79 @@ function rprompt-git-current-branch {
 
     # %{..%} は囲まれた文字列がエスケープシーケンスであることを明示する
     # これをしないと右プロンプトの位置がずれる
-    echo "(%{$color%}$name%{[m%}$mark) "
+    echo "$mark%{$color%}$name%{[m%} "
 }
 
 # プロンプ表示されるたびにプロンプト文字列を評価、置換する
 setopt prompt_subst
 
-RPROMPT='`rprompt-git-current-branch`[%{[38;5;7m%}%~%{[m%}]'
+RPROMPT='`rprompt-git-current-branch`%{[38;5;103m%}%~%{[m%}'
 
-setopt histignorealldups sharehistory
 
+#===================================
+# Key Binds
+#===================================
 # Use emacs keybindings even if our EDITOR is set to vi
 bindkey -e
 
+
+#===================================
+# History
+#===================================
+# 複数のシェルで履歴を共有
+#setopt histignorealldups sharehistory
+
 # Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
-HISTSIZE=1000
-SAVEHIST=1000
+HISTSIZE=100000
+SAVEHIST=5000
 HISTFILE=~/.zsh_history
 
-# Use modern completion system
-autoload -Uz compinit
+
+#===================================
+# Completion
+#===================================
+autoload -U compinit
 compinit
+zstyle ':completion:*:default' menu select=2
 
-zstyle ':completion:*' auto-description 'specify: %d'
-zstyle ':completion:*' completer _expand _complete _correct _approximate
-zstyle ':completion:*' format 'Completing %d'
+# 補完関数の表示を強化する
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*' completer _expand _complete _match _prefix _approximate _list _history
+zstyle ':completion:*:messages' format '%F{YELLOW}%d'$DEFAULT
+zstyle ':completion:*:warnings' format '%F{RED}No matches for:''%F{YELLOW} %d'$DEFAULT
+zstyle ':completion:*:descriptions' format '%F{YELLOW}completing %B%d%b'$DEFAULT
+zstyle ':completion:*:options' description 'yes'
+zstyle ':completion:*:descriptions' format '%F{yellow}Completing %B%d%b%f'$DEFAULT
+
+# マッチ種別を別々に表示
 zstyle ':completion:*' group-name ''
-zstyle ':completion:*' menu select=2
-eval "$(dircolors -b)"
-zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*' list-colors ''
-zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
-zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
-zstyle ':completion:*' menu select=long
-zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
-zstyle ':completion:*' use-compctl false
-zstyle ':completion:*' verbose true
 
-zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
-zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
+# セパレータを設定する
+zstyle ':completion:*' list-separator '-->'
+zstyle ':completion:*:manuals' separate-sections true
 
-# set Cask path
-if [ -d "$HOME/.cask/bin" ]; then
-    PATH="$HOME/.cask/bin:$PATH"
-fi
+# LS_COLORSを設定しておく
+export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
 
-# set Go path
-if [ -d "$HOME/.go" ]; then
-    export GOPATH="$HOME/.go"
-fi
+# ファイル補完候補に色を付ける
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
-# set rbenv path
-if [ -d "$HOME/.rbenv" ]; then
-    export PATH="$HOME/.rbenv/bin:$PATH"
-    eval "$(rbenv init -)"
-fi
+
+#===================================
+# Suggestion
+#===================================
+source $HOME/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+
+#===================================
+# Syntax Highlight
+#===================================
+source $HOME/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+
+#===================================
+# Aliases
+#===================================
+alias ls="ls -FG"
+alias ll="ls -lFG"
+alias la="ls -alFG"
