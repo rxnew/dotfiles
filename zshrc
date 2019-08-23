@@ -6,7 +6,9 @@ colors
 #===================================
 # Prompt
 #===================================
-PROMPT=$'%{[38;5;103m%}>%{[m%} '
+#PROMPT=$'%{[38;5;103m%}>%{[m%} '
+PROMPT=$'%{[38;5;103m%}\u276F%{[m%} '
+
 
 function rprompt-git-current-branch {
     local name st color mark
@@ -34,13 +36,14 @@ function rprompt-git-current-branch {
 
     # %{..%} は囲まれた文字列がエスケープシーケンスであることを明示する
     # これをしないと右プロンプトの位置がずれる
-    echo "$mark%{$color%}$name%{[m%} "
+    echo "$mark %{$color%}($name)%{[m%} "
 }
 
 # プロンプ表示されるたびにプロンプト文字列を評価、置換する
 setopt prompt_subst
 
 RPROMPT='`rprompt-git-current-branch`%{[38;5;103m%}%~%{[m%}'
+#RPROMPT='`rprompt-git-current-branch`%{[38;5;4m%}%~%{[m%}'
 
 
 #===================================
