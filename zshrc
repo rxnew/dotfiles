@@ -6,8 +6,8 @@ colors
 #===================================
 # Prompt
 #===================================
-#PROMPT=$'%{[38;5;103m%}>%{[m%} '
-PROMPT=$'%{[38;5;103m%}\u276F%{[m%} '
+PROMPT=$'%{[38;5;103m%}>%{[m%} '
+#PROMPT=$'%{[38;5;103m%}\u276F%{[m%} '
 
 
 function rprompt-git-current-branch {
@@ -51,6 +51,9 @@ RPROMPT='`rprompt-git-current-branch`%{[38;5;103m%}%~%{[m%}'
 #===================================
 # Use emacs keybindings even if our EDITOR is set to vi
 bindkey -e
+# CTRL-left/right for Ubuntu
+#bindkey "^[[1;5C" forward-word
+#bindkey "^[[1;5D" backward-word
 
 
 #===================================
