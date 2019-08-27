@@ -36,7 +36,7 @@ function rprompt-git-current-branch {
 
     # %{..%} は囲まれた文字列がエスケープシーケンスであることを明示する
     # これをしないと右プロンプトの位置がずれる
-    echo "$mark %{$color%}($name)%{[m%} "
+    echo "$mark %{$color%}(Git:$name)%{[m%} "
 }
 
 # プロンプ表示されるたびにプロンプト文字列を評価、置換する
