@@ -1,7 +1,7 @@
 #===================================
 # Function
 #===================================
-fpath=($fpath ~/.zsh/completion ~/.zfunc)
+fpath=($fpath $ZDOTDIR/completion ~/.zfunc)
 
 # ${fg[...]} や $reset_color をロード
 autoload -U colors
@@ -56,9 +56,6 @@ RPROMPT='`rprompt-git-current-branch`%{[38;5;103m%}%~%{[m%}'
 #===================================
 # Use emacs keybindings even if our EDITOR is set to vi
 bindkey -e
-# CTRL-left/right for Ubuntu
-#bindkey "^[[1;5C" forward-word
-#bindkey "^[[1;5D" backward-word
 
 
 #===================================
@@ -106,13 +103,13 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 #===================================
 # Suggestion
 #===================================
-source $HOME/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $ZDOTDIR/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 
 #===================================
 # Syntax Highlight
 #===================================
-source $HOME/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 
 #===================================
@@ -124,9 +121,19 @@ alias la="ls -alFG"
 
 
 #===================================
-# Environment Variables
+# Environment Specifics
 #===================================
-if [[ -e $HOME/.zsh/.env ]]
+for file in $ZDOTDIR/.zshrc_common*
+do
+    source "$file"
+done
+
+for file in $ZDOTDIR/.zshrc_$(uname)*
+do
+    source "$file"
+done
+
+if [[ -f $ZDOTDIR/.zshrc_local ]]
 then
-    source $HOME/.zsh/.env
+    source $ZDOTDIR/.zshrc_local
 fi
