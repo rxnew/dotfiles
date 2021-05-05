@@ -1,3 +1,8 @@
+#===================================
+# Function
+#===================================
+fpath=($fpath ~/.zsh/completion ~/.zfunc)
+
 # ${fg[...]} や $reset_color をロード
 autoload -U colors
 colors
