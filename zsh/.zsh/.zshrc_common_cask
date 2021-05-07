@@ -1,0 +1,4 @@
+if [[ -d "$HOME/.cask/bin" ]]
+then
+    export PATH="$HOME/.cask/bin:$PATH"
+fi

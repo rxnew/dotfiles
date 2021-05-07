@@ -1,4 +1,4 @@
-if [[ -e $HOME/.poetry/bin ]]
+if [[ -d "$HOME/.poetry/bin" ]]
 then
-    export PATH="$PATH:$HOME/.poetry/bin"
+    export PATH="$HOME/.poetry/bin:$PATH"
 fi
