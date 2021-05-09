@@ -2,3 +2,15 @@ if [[ -d "/usr/local/go/bin" ]]
 then
     export PATH="/usr/local/go/bin:$PATH"
 fi
+
+if [[ -f "/usr/local/bin/gotest" ]]
+then
+    export go() {
+        if [[ $1 == 'test' ]]
+	then
+	    command gotest ${@:2:($#-1)}
+	else
+	    command go $@
+	fi
+    }
+fi
