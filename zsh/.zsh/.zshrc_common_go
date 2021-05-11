@@ -3,6 +3,11 @@ then
     export PATH="/usr/local/go/bin:$PATH"
 fi
 
+if [[ -d "$HOME/go/bin" ]]
+then
+    export PATH="$HOME/go/bin:$PATH"
+fi
+
 if [[ -f "/usr/local/bin/gotest" ]]
 then
     export go() {
