@@ -125,12 +125,12 @@ alias la="ls -alFG"
 #===================================
 for file in $ZDOTDIR/.zshrc_common*
 do
-    source "$file"
+    [[ "${file##*.}" != "old" ]] && [[ "${file##*.}" != "bak" ]] && source "$file"
 done
 
 for file in $ZDOTDIR/.zshrc_$(uname)*
 do
-    source "$file"
+    [[ "${file##*.}" != "old" ]] && [[ "${file##*.}" != "bak" ]] && source "$file"
 done
 
 if [[ -f $ZDOTDIR/.zshrc_local ]]

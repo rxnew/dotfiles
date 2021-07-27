@@ -8,15 +8,15 @@ cd "$(dirname $0)"
 
 echo 'Install .zsh'
 mkdir -p "$ZDOTDIR"
-for src in $(find .zsh -type f)
+for src in $(find .zsh -maxdepth 1 -type f)
 do
     dst="$ZDOTDIR/$(basename $src)"
-    [[ -e "$dst" ]] && mv "$dst" "$dst".bak
+    [[ -e "$dst" ]] && mv "$dst" "$dst".old
     cp "$src" "$dst"
 done
 
 echo 'Install .zshenv'
-[[ -e "$ZSHENV_PATH" ]] && mv "$ZSHENV_PATH" "${ZSHENV_PATH}".bak
+[[ -e "$ZSHENV_PATH" ]] && mv "$ZSHENV_PATH" "${ZSHENV_PATH}".old
 cp .zshenv "$ZSHENV_PATH"
 
 if [[ ! -e "$ZSH_PLUGINS_PATH"/zsh-syntax-highlighting ]]
