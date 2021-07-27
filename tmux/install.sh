@@ -6,7 +6,7 @@ readonly TMUX_PLUGINS_PATH="$HOME"/.tmux/plugins
 cd "$(dirname $0)"
 
 echo 'Install .tmux.conf'
-[[ -e "$TMUX_CONF_PATH" ]] && mv "$TMUX_CONF_PATH" "$TMUX_CONF_PATH".bak
+[[ -e "$TMUX_CONF_PATH" ]] && mv "$TMUX_CONF_PATH" "$TMUX_CONF_PATH".old
 cp .tmux.conf "$TMUX_CONF_PATH"
 
 if [[ ! -e "$TMUX_PLUGINS_PATH"/tpm ]]
