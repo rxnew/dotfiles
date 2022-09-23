@@ -30,6 +30,6 @@ if test -S $wsl_mount_root/wslg/.X11-unix/X0; then
     # create symlink to wslg socket
     $wsl_windir/wsl.exe -d $wsl_distro -u root ln -s $wsl_mount_root/wslg/.X11-unix/X0 /tmp/.X11-unix/X${wsl_wslg_display}
     # export updated display number for user's convenience
-  export DISPLAY=:${wsl_wslg_display}
+    export DISPLAY=:${wsl_wslg_display}
   fi
 fi
