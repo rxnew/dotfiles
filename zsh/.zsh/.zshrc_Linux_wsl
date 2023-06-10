@@ -1,7 +1,0 @@
-# Check if the environment is WSL
-if [[ -f "/proc/sys/fs/binfmt_misc/WSLInterop" ]]
-then
-    # X410 configuration
-    # https://x410.dev/cookbook/wsl/using-x410-with-wsl2/
-    export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}'):0.0
-fi
