@@ -1,0 +1,4 @@
+if [[ $commands[snap] ]]
+then
+    export PATH=$PATH:/snap/bin
+fi
