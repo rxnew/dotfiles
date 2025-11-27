@@ -65,8 +65,8 @@ bindkey -e
 #setopt histignorealldups sharehistory
 
 # Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
-HISTSIZE=100000
-SAVEHIST=5000
+HISTSIZE=5000
+SAVEHIST=100000
 HISTFILE=~/.zsh_history
 
 
@@ -118,6 +118,12 @@ source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 alias ls="ls -FG"
 alias ll="ls -lFG"
 alias la="ls -alFG"
+
+
+#===================================
+# Others
+#===================================
+setopt interactivecomments
 
 
 #===================================
