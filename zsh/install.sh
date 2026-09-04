@@ -22,11 +22,18 @@ cp .zshenv "$ZSHENV_PATH"
 if [[ ! -e "$ZSH_PLUGINS_PATH"/zsh-syntax-highlighting ]]
 then
     echo 'Install zsh-syntax-highlighting'
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_PLUGINS_PATH"/zsh-syntax-highlighting
+    git clone --depth 1 https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_PLUGINS_PATH"/zsh-syntax-highlighting
 fi
 
 if [[ ! -e "$ZSH_PLUGINS_PATH"/zsh-autosuggestions ]]
 then
     echo 'Install zsh-autosuggestions'
-    git clone https://github.com/zsh-users/zsh-autosuggestions.git "$ZSH_PLUGINS_PATH"/zsh-autosuggestions
+    git clone --depth 1 https://github.com/zsh-users/zsh-autosuggestions.git "$ZSH_PLUGINS_PATH"/zsh-autosuggestions
+fi
+
+if [[ ! -e "$HOME"/.fzf ]]
+then
+    echo 'Install fzf'
+    git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME"/.fzf
+    yes | "$HOME"/.fzf/install --no-update-rc --no-bash --no-fish --no-nushell
 fi

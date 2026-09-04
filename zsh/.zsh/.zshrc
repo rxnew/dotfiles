@@ -104,6 +104,8 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 # Suggestion
 #===================================
 source $ZDOTDIR/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source <($HOME/.fzf/bin/fzf --zsh)
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 
 #===================================
