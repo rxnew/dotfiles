@@ -4,3 +4,8 @@
 .DS_Store
 .idea/
 .envrc
+.worktrees/
+.claude/worktrees
+.claude/settings.local.json
+go.work
+go.work.sum
