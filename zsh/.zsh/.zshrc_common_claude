@@ -1,0 +1,123 @@
+if [[ $commands[claude] ]]
+then
+    # Keymap for the mini-buffer input (a copy of main)
+    bindkey -N claude-prompt main
+    # Abort the input with Ctrl+] / Ctrl+C / Ctrl+Q / ESC (Ctrl+G falls back to send-break from main)
+    # Ctrl+] is already bound on the copy source once .zshrc is reloaded, so it must always be overridden here
+    bindkey -M claude-prompt '^]' send-break
+    bindkey -M claude-prompt '^C' send-break
+    bindkey -M claude-prompt '^Q' send-break
+    bindkey -M claude-prompt '^[' send-break
+
+    # Read a request for Claude from the mini-buffer and store it in $REPLY.
+    # Returns non-zero if interrupted. In either case, the original BUFFER and CURSOR are preserved.
+    claude-prompt-read() {
+        local readprompt="$1" lbuf_saved=$LBUFFER rbuf_saved=$RBUFFER
+        # The input is not a shell command, so cap the highlight length at 0 to suppress syntax highlighting
+        # https://github.com/zsh-users/zsh-syntax-highlighting/blob/1386f1213eb0b0589d73cd3cf7c56e6a972a9bfd/docs/highlighters.md#highlighter-independent-settings
+        local ZSH_HIGHLIGHT_MAXLENGTH=0
+        integer stat savelim=$UNDO_LIMIT_NO changeno=$UNDO_CHANGE_NO
+
+        {
+            # Use an anonymous function so the special parameters are reliably restored
+            # local +h is required to keep their special-parameter behavior
+            () {
+                local pretext="$PREDISPLAY$LBUFFER$RBUFFER$POSTDISPLAY
+"
+                local +h LBUFFER= RBUFFER= POSTDISPLAY=
+                local +h PREDISPLAY="$pretext$readprompt"
+                local +h -a region_highlight
+                region_highlight=("P${#pretext} ${#PREDISPLAY} bold")
+                local NUMERIC
+                unset NUMERIC
+
+                zle split-undo
+                UNDO_LIMIT_NO=$UNDO_CHANGE_NO
+                zle recursive-edit -K claude-prompt
+                stat=$?
+                (( stat )) || REPLY=$BUFFER
+            }
+        } always {
+            # Drop the mini-buffer edits from the undo history
+            zle undo $changeno
+            UNDO_LIMIT_NO=savelim
+            # zsh-autosuggestions wraps the widget and shifts the undo change number, which makes the undo
+            # above rewrite the original input line, so restore its content explicitly
+            LBUFFER=$lbuf_saved
+            RBUFFER=$rbuf_saved
+        }
+
+        return $stat
+    }
+
+    claude-prompt-widget() {
+        # Avoid re-entering while already reading input, in case the bound key is pressed twice
+        # zsh local variables are dynamically scoped, so this is visible from nested calls too
+        (( ${+in_claude_prompt} )) && return 0
+        local in_claude_prompt=1
+
+        # Hide the background-job completion message (e.g. "[1]+ Done") while running
+        setopt localoptions nomonitor
+
+        local stty_saved=$(stty -g < /dev/tty)
+        integer read_stat
+        {
+            # Deliver Ctrl+C to zle as SIGINT and Ctrl+Q as a plain key instead of letting the terminal consume them
+            stty -isig -ixon < /dev/tty
+            claude-prompt-read "🤖 Claude > "
+            read_stat=$?
+        } always {
+            stty "$stty_saved" < /dev/tty
+        }
+
+        local user_input=$REPLY
+        if (( read_stat )) || [[ -z "$user_input" ]]; then
+            zle -R
+            return 0
+        fi
+
+        # Create a temporary file to hold the generated command
+        local tmp_file=$(mktemp)
+        local cmd
+
+        # Run Claude in the background and write the result to the temporary file
+        command claude -p --model sonnet --effort low "User request: $user_input. Output ONLY the single raw executable zsh command to achieve this. Do not use markdown backticks, formatting, or explanations." < /dev/null > "$tmp_file" 2>/dev/null &
+        local pid=$!
+
+        {
+            # Treat Ctrl+C during generation as canceling only the generation, not the whole widget
+            integer interrupted=0
+            trap 'interrupted=1' INT
+
+            # Spinner animation frames
+            local frames=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
+            integer i=1
+
+            # Animate while Claude is still running
+            while kill -0 $pid 2>/dev/null; do
+                (( interrupted )) && break
+                zle -R "⏳ Generating command... ${frames[$i]}"
+                i=$(( i % ${#frames[@]} + 1 ))
+                sleep 0.1
+            done
+
+            (( interrupted )) || cmd=$(cat "$tmp_file")
+        } always {
+            trap - INT
+            kill $pid 2>/dev/null
+            rm -f "$tmp_file"
+        }
+
+        # Insert the result into the prompt (BUFFER)
+        if [[ -n "$cmd" ]]; then
+            BUFFER="$cmd"
+            CURSOR=$#BUFFER
+        fi
+
+        zle reset-prompt
+    }
+
+    zle -N claude-prompt-widget
+    bindkey '^]' claude-prompt-widget
+    bindkey -M viins '^]' claude-prompt-widget 2>/dev/null || true
+fi
