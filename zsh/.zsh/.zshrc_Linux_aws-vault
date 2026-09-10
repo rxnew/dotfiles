@@ -1,0 +1,8 @@
+# aws-vault
+if [[ $commands[aws-vault] ]]
+then
+    export AWS_VAULT_BACKEND=file
+    export AWS_VAULT_FILE_PASSPHRASE=
+    export AWS_SESSION_TOKEN_TTL=12h
+    export GPG_TTY=$(tty)
+fi
