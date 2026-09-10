@@ -1,4 +1,3 @@
-# aws-vault
 if [[ $commands[aws-vault] ]]
 then
     export AWS_VAULT_BACKEND=file
